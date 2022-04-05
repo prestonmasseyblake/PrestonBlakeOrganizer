@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Organizer</title>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    {% load static %}
+    <script src="{%static 'sudoku.js' %}" ></script>
+    <link rel="stylesheet" href="{%static 'sudoku/sudoku.css' %}"/>
+    {% include "bootstrap.html" %}
+  </head>
+  <body onload="initBoard()">
+    {% include "nav.html" %}
+    <h1 class="text-center">Organizer</h1>
+    <div class="jumbotron ">
+    <div class="container">
+      <div class="row ">
+        <div class="col-sm-6 ">
+          <p class="text-center">Tasks</p>
+          <div class="circle-chart"></div> 
+          <a href="/tasks/">
+          <button type="button" class="btn btn-primary align-self-center">Tasks</button>
+          </a>
+        </div>
+          <div class="col-sm-6 ">
+            <p class="text-center">Budget</p>
+            <div class="ct-chart">
+            </div> 
+            <a href="/budget/">
+<button type="button"  class="btn btn-primary align-self-center">Budget</button>
+            </a>
+        </div>
+      </div>
+    </div>
+    </div>
+    <script> 
+      console.log({{mainBudgets}})
+      console.log({{projectedBudgets}})
+    // circle chart    
+    percent = {{notCompleted}}/ {{totalTasks}}
+      var circledata = {
+  series: [percent, 1 - percent]
+
+};
+
+
+var toggled = false;
+new Chartist.Pie('.circle-chart', circledata, {
+  labelInterpolationFnc: function(value) {
+    if (!toggled){
+      toggled = true
+      return "pending";
+    }
+    else {
+      return "completed";
+    }
+  }
+});
+
+ // line chart    
+    var data = {
+  labels: [],
+    series: [
+    {{mainBudgets}},
+    {{projectedBudgets}}
+  ]
+};
+
+var options = {
+  seriesBarDistance: 15
+};
+
+var responsiveOptions = [
+  ['screen and (min-width: 641px) and (max-width: 1024px)', {
+    seriesBarDistance: 10,
+    axisX: {
+      labelInterpolationFnc: function (value) {
+        return value;
+      }
+    }
+  }],
+  ['screen and (max-width: 640px)', {
+    seriesBarDistance: 5,
+    axisX: {
+      labelInterpolationFnc: function (value) {
+        return value[0];
+      }
+    }
+  }]
+];
+
+new Chartist.Bar('.ct-chart', data, options, responsiveOptions);
+    </script>
+  </body>
+</html>
